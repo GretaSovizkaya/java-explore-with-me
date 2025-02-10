@@ -1,20 +1,17 @@
 
 package server.exception;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@AllArgsConstructor
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ErrorResponse {
-    private final String error;
-    private final String description;
+    String error;
+    String description;
 
-    public ErrorResponse(String error, String description) {
-        this.error = error;
-        this.description = description;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

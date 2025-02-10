@@ -1,8 +1,9 @@
-
 package server.service;
 
 import dto.StatDto;
 import dto.StatResponseDto;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsServiceImpl implements StatsService {
-    private final StatsRepository statsRepository;
+    StatsRepository statsRepository;
     StatMapper statMapper;
 
     @Override
