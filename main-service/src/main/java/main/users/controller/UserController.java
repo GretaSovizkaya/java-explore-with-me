@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import main.users.dto.UserCreateRequestDto;
 import main.users.dto.UserDto;
-import main.users.mapper.UserMapper;
 import main.users.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,8 @@
 package main.events.controller.admin;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +37,7 @@ public class AdminEventController {
             @RequestParam(defaultValue = "10") @Positive final int size) {
         LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : LocalDateTime.now();
         LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : LocalDateTime.now().plusYears(20);
-        EventAdminParamsDto eventAdminParams =  new EventAdminParamsDto();
+        EventAdminParamsDto eventAdminParams = new EventAdminParamsDto();
         eventAdminParams.setUsers(users);
         eventAdminParams.setStates(states);
         eventAdminParams.setCategories(categories);

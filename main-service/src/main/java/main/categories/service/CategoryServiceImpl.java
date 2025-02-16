@@ -8,20 +8,18 @@ import main.categories.dto.CategoryRequestDto;
 import main.categories.mapper.CategoryMapper;
 import main.categories.model.Category;
 import main.categories.repository.CategoryRepository;
-import main.categories.service.CategoryService;
 import main.exceptions.NotFoundException;
 import main.exceptions.ValidatetionConflict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryServiceImpl implements CategoryService {
 
     CategoryRepository categoryRepository;
@@ -88,4 +86,4 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return true;
     }
-    }
+}

@@ -8,7 +8,6 @@ import main.events.model.enums.EventStatus;
 import main.location.dto.LocationDto;
 import main.users.dto.UserShortDto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

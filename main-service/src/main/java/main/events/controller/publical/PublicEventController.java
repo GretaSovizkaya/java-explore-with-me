@@ -1,7 +1,6 @@
 package main.events.controller.publical;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -13,7 +12,6 @@ import main.events.dto.EventFullDto;
 import main.events.dto.EventParamsDto;
 import main.events.dto.EventShortDto;
 import main.events.service.EventService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,7 +23,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PublicEventController {
 
     EventService eventService;

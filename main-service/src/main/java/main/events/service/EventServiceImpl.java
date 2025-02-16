@@ -197,7 +197,8 @@ public class EventServiceImpl implements EventService {
         Event eventSaved = eventRepository.save(event);
 
         EventFullDto eventFullDto = EventMapper.toEventFullDto(eventSaved);
-        eventFullDto.setViews(0L);eventFullDto.setConfirmedRequests(0);
+        eventFullDto.setViews(0L);
+        eventFullDto.setConfirmedRequests(0);
         return eventFullDto;
     }
 
