@@ -1,39 +1,41 @@
 package main.categories.controller.admin;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import main.categories.dto.CategoryDto;
 import main.categories.dto.CategoryRequestDto;
 import main.categories.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-@Validated
 @RestController
 @RequestMapping("/admin/categories")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCategoryController {
 
-    private final CategoryService categoryService;
+    CategoryService categoryService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<CategoryDto> addCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryRequestDto));
+    public ResponseEntity<CategoryDto> addCategory(@RequestBody @Valid CategoryRequestDto categoryRequestDto) {
+        CategoryDto createdCategory = categoryService.createCategory(categoryRequestDto);
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{catId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Long catId) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long catId) {
         categoryService.deleteCategory(catId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{catId}")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long catId,
-                                                      @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
-        return ResponseEntity.ok(categoryService.updateCategory(catId, categoryRequestDto));
+    public ResponseEntity<CategoryDto> updateCategory(
+            @PathVariable Long catId,
+            @RequestBody @Valid CategoryRequestDto categoryRequestDto) {
+        CategoryDto updatedCategory = categoryService.updateCategory(catId, categoryRequestDto);
+        return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 }

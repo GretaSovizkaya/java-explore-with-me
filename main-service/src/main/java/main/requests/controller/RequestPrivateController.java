@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import main.requests.dto.ParticipationRequestDto;
 import main.requests.service.RequestService;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,26 +15,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/requests")
 @RequiredArgsConstructor
-@Validated
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RequestPrivateController {
+
     RequestService requestService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto addRequest(@PathVariable(value = "userId") @Min(0) Long userId,
-                                              @RequestParam(name = "eventId") @Min(0) Long eventId) {
-        return requestService.createRequest(userId, eventId);
+    public ResponseEntity<ParticipationRequestDto> addRequest(
+            @PathVariable @Min(0) Long userId,
+            @RequestParam @Min(0) Long eventId) {
+        ParticipationRequestDto request = requestService.createRequest(userId, eventId);
+        return new ResponseEntity<>(request, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<ParticipationRequestDto> getAllRequests(@PathVariable(value = "userId") @Min(0) Long userId) {
-        return requestService.getRequestByUserId(userId);
+    public ResponseEntity<List<ParticipationRequestDto>> getAllRequests(
+            @PathVariable @Min(0) Long userId) {
+        List<ParticipationRequestDto> requests = requestService.getRequestByUserId(userId);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    public ParticipationRequestDto canceledRequest(@PathVariable(value = "userId") @Min(0) Long userId,
-                                                   @PathVariable(value = "requestId") @Min(0) Long requestId) {
-        return requestService.cancelRequest(userId, requestId);
+    public ResponseEntity<ParticipationRequestDto> cancelRequest(
+            @PathVariable @Min(0) Long userId,
+            @PathVariable @Min(0) Long requestId) {
+        ParticipationRequestDto canceledRequest = requestService.cancelRequest(userId, requestId);
+        return new ResponseEntity<>(canceledRequest, HttpStatus.OK);
     }
 }
