@@ -33,13 +33,14 @@ services:
     container_name: stats-server-container
     ports:
       - "9090:9090"
+      - "9091:9091"
     depends_on:
       - stats-db
     restart: on-failure
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - SPRING_DATASOURCE_USERNAME=stats
-      - SPRING_DATASOURCE_PASSWORD=stats
+      - POSTGRES_USER=ewm
+      - POSTGRES_PASSWORD=ewm
 
   stats-db:
     image: postgres:16.1
