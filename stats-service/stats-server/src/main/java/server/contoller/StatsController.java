@@ -4,7 +4,9 @@ package server.contoller;
 import dto.StatDto;
 import dto.StatResponseDto;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +22,15 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RequestMapping("/stats")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsController {
-    private final StatsService statsService;
+    StatsService statsService;
 
     @GetMapping("/stats")
     public ResponseEntity<List<StatResponseDto>> getStats(@RequestParam LocalDateTime start,
-                                                   @RequestParam LocalDateTime end,
-                                                   @RequestParam(required = false) List<String> uris,
-                                                   @RequestParam(defaultValue = "false") boolean unique) {
+                                                          @RequestParam LocalDateTime end,
+                                                          @RequestParam(required = false) List<String> uris,
+                                                          @RequestParam(defaultValue = "false") boolean unique) {
         List<StatResponseDto> stats = statsService.getStats(start, end, uris, unique);
         return ResponseEntity.ok(stats);
     }
