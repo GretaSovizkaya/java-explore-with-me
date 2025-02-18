@@ -22,7 +22,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsClient {
     RestTemplate restTemplate;
-    String statsServiceUrl = "http://localhost:8080/stats";
+    String statsServiceUrl = "http://stats-server:9090";
 
     public void sendHit(StatDto hitDto) {
         HttpHeaders headers = new HttpHeaders();

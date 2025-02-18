@@ -33,7 +33,7 @@ public class Event {
     @JoinColumn(name = "initiator_id")
     User initiator;
 
-    @Column(name = "confirmed_requests")
+    @Column(name = "confirmed_Requests")
     Integer confirmedRequests;
 
     @Column(name = "description", length = 7000)

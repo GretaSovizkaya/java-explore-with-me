@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SpringBootApplication(scanBasePackages = {"ru.practicum.client"})  // для Idea
+@SpringBootApplication(scanBasePackages = {"client"})  // для Idea
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -172,7 +172,7 @@ public class EventServiceImpl implements EventService {
                 .app(applicationName)
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
-                .timestamp(LocalDate.now())
+                .timestamp(LocalDateTime.now())
                 .build());
 
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
@@ -277,7 +277,7 @@ public class EventServiceImpl implements EventService {
                 .app(applicationName)
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
-                .timestamp(LocalDate.now())
+                .timestamp(LocalDateTime.now())
                 .build());
 
         Pageable pageable = PageRequest.of(eventParams.getFrom() / eventParams.getSize(), eventParams.getSize());

@@ -2,19 +2,17 @@
 package server.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.*;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "statistics")
+@Table(name = "stats")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Stats {
     @Id
@@ -32,6 +30,6 @@ public class Stats {
     String ip;
 
     @Column(name = "time_stamp")
-    LocalDate timestamp;
+    LocalDateTime timestamp;
 
 }

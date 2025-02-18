@@ -14,6 +14,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
 
   ewm-db:
     image: postgres:16.1
@@ -26,6 +27,7 @@ services:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
 
   stats-server:
     build: stats-service/stats-server
@@ -39,8 +41,9 @@ services:
     restart: on-failure
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - POSTGRES_USER=ewm
-      - POSTGRES_PASSWORD=ewm
+      - POSTGRES_USER=stats
+      - POSTGRES_PASSWORD=stats
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
 
   stats-db:
     image: postgres:16.1
@@ -53,5 +56,4 @@ services:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats
       - POSTGRES_PASSWORD=stats
-
 

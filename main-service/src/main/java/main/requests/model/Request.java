@@ -1,6 +1,5 @@
 package main.requests.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,17 +16,21 @@ import java.time.LocalDateTime;
 @Entity(name = "requests")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Request {
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime created;
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    Event event;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(name = "create_date", nullable = false)
+    LocalDateTime created;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    Event event;
+
     @ManyToOne
     @JoinColumn(name = "requester_id")
-    User requestor;
+    User requester;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     RequestStatus status;
