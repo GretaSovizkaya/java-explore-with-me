@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 
 public interface StatsRepository extends JpaRepository<Stats, Long> {
+
     @Query("""
             SELECT new ru.practicum.StatResponseDto(s.ip, s.uri, COUNT(DISTINCT s.ip))
             FROM Statistics AS s
