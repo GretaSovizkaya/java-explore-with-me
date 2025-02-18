@@ -1,21 +1,51 @@
 services:
+  ewm-service:
+    build: main-service
+    image: main-service
+    container_name: ewm-service-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+      - stats-server
+    restart: on-failure
+    environment:
+      - EWM_STATS_SERVER_URL=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
+      - POSTGRES_USER=ewm
+      - POSTGRES_PASSWORD=ewm
+
+  ewm-db:
+    image: postgres:16.1
+    container_name: ewm-db-container
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "6540:5432"
+    environment:
+      - POSTGRES_DB=ewm
+      - POSTGRES_USER=ewm
+      - POSTGRES_PASSWORD=ewm
+
   stats-server:
     build: stats-service/stats-server
+    image: stats-server
     container_name: stats-server-container
     ports:
       - "9090:9090"
     depends_on:
       - stats-db
+    restart: on-failure
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - SPRING_DATASOURCE_USERNAME=stats
       - SPRING_DATASOURCE_PASSWORD=stats
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-    restart: always
 
   stats-db:
     image: postgres:16.1
-    container_name: stats-db
+    container_name: stats-db-container
+    volumes:
+      - /var/lib/postgresql/data/
     ports:
       - "6541:5432"
     environment:
@@ -24,29 +54,3 @@ services:
       - POSTGRES_PASSWORD=stats
 
 
-  ewm-service:
-    build: main-service
-    container_name: ewm-service-container
-    ports:
-      - "8080:8080"
-    depends_on:
-      - ewm-db
-      - stats-server
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - SPRING_DATASOURCE_USERNAME=ewm
-      - SPRING_DATASOURCE_PASSWORD=ewm
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-    restart: always
-
-  ewm-db:
-    image: postgres:16.1
-    container_name: ewm-db
-    ports:
-      - "6540:5432"
-    environment:
-      - POSTGRES_DB=ewm
-      - POSTGRES_USER=ewm
-      - POSTGRES_PASSWORD=ewm
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-    restart: always

@@ -6,9 +6,9 @@ import lombok.experimental.FieldDefaults;
 import main.compilations.dto.CompilationRequestDto;
 import main.compilations.dto.CompilationResponseDto;
 import main.compilations.dto.NewCompilationDto;
-import main.compilations.mapper.CompilationMapper;
 import main.compilations.model.Compilation;
 import main.compilations.repository.CompilationRepository;
+import main.compilations.mapper.CompilationMapper;
 import main.events.model.Event;
 import main.events.repository.EventRepository;
 import main.exceptions.NotFoundException;
@@ -27,12 +27,11 @@ import java.util.stream.Collectors;
 public class CompilationServiceImpl implements CompilationService {
     CompilationRepository compilationRepository;
     EventRepository eventRepository;
-    CompilationMapper compilationMapper;
 
     @Transactional
     @Override
     public CompilationResponseDto createCompilation(CompilationRequestDto compilationDto) {
-        Compilation compilation = compilationMapper.toCompilation(compilationDto);
+        Compilation compilation = CompilationMapper.toCompilation(compilationDto);
         compilation.setPinned(Optional.ofNullable(compilation.getPinned()).orElse(false));
 
         Set<Long> compEventIds = (compilationDto.getEvents() != null) ? compilationDto.getEvents() : Collections.emptySet();
@@ -42,7 +41,7 @@ public class CompilationServiceImpl implements CompilationService {
         compilation.setEvents(eventsSet);
 
         Compilation compilationAfterSave = compilationRepository.save(compilation);
-        return compilationMapper.toDto(compilationAfterSave);
+        return CompilationMapper.toDto(compilationAfterSave);
     }
 
     @Transactional
@@ -64,7 +63,7 @@ public class CompilationServiceImpl implements CompilationService {
         }
         compilation.setTitle(Optional.ofNullable(update.getTitle()).orElse(compilation.getTitle()));
 
-        return compilationMapper.toDto(compilation);
+        return CompilationMapper.toDto(compilation);
     }
 
     @Transactional
@@ -86,13 +85,13 @@ public class CompilationServiceImpl implements CompilationService {
         }
 
         return compilations.stream()
-                .map(compilationMapper::toDto)
+                .map(CompilationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public CompilationResponseDto findCompilationById(Long compId) {
-        return compilationMapper.toDto(checkCompilation(compId));
+        return CompilationMapper.toDto(checkCompilation(compId));
     }
 
     private Compilation checkCompilation(Long compId) {

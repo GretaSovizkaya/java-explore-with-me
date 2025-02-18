@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CompilationMapper {
-    public CompilationResponseDto toDto(Compilation compilation) {
+    public static CompilationResponseDto toDto(Compilation compilation) {
         return CompilationResponseDto.builder()
                 .id(compilation.getId())
                 .events(compilation.getEvents().stream()
