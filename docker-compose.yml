@@ -6,6 +6,7 @@ services:
       - "9090:9090"
     depends_on:
       - stats-db
+    restart: on-failure
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - SPRING_DATASOURCE_USERNAME=stats
@@ -17,7 +18,6 @@ services:
     container_name: stats-db
     ports:
       - "6541:5432"
-      # - "5432:5432" //Idea
     environment:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats
@@ -31,6 +31,7 @@ services:
     depends_on:
       - ewm-db
       - stats-server
+    restart: on-failure
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - SPRING_DATASOURCE_USERNAME=ewm

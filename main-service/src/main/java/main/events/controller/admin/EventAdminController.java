@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/admin/events")
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EventAdminController {
     EventService eventService;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -41,7 +41,7 @@ public class EventAdminController {
         log.info("запрос на получение всех событий (ADMIN)");
         LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : LocalDateTime.now();
         LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : LocalDateTime.now().plusYears(20);
-        EventAdminParamsDto eventAdminParams =  new EventAdminParamsDto();
+        EventAdminParamsDto eventAdminParams = new EventAdminParamsDto();
         eventAdminParams.setUsers(users);
         eventAdminParams.setStates(states);
         eventAdminParams.setCategories(categories);

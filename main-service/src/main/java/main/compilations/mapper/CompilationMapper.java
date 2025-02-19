@@ -22,7 +22,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public  static Compilation toCompilation(CompilationRequestDto compilationDto) {
+    public static Compilation toCompilation(CompilationRequestDto compilationDto) {
         return Compilation.builder()
                 .pinned(compilationDto.getPinned())
                 .title(compilationDto.getTitle())

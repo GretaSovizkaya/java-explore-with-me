@@ -1,7 +1,9 @@
 package main.events.controller.privat;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping(path = "/users/{userId}/events")
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EventPrivateController {
     EventService eventService;
 

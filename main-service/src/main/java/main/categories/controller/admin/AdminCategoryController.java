@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/admin/categories")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
-public class  AdminCategoryController {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AdminCategoryController {
     CategoryService categoryService;
 
     @PostMapping
@@ -38,7 +38,7 @@ public class  AdminCategoryController {
 
     @PatchMapping("/{catId}")
     public CategoryDto updateCategory(@PathVariable(value = "catId") @Min(1) Long id,
-                                              @RequestBody @Valid CategoryRequestDto categoryRequestDto) {
+                                      @RequestBody @Valid CategoryRequestDto categoryRequestDto) {
         log.info("Обновдение категории с id = {}", id);
         return categoryService.updateCategory(id, categoryRequestDto);
     }

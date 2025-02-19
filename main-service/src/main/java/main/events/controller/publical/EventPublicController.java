@@ -25,7 +25,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping(path = "/events")
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EventPublicController {
     EventService eventService;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

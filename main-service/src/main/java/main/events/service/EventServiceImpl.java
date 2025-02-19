@@ -45,23 +45,21 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
-//@SpringBootApplication(scanBasePackages = {"client"})
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventServiceImpl implements EventService {
-    EventRepository eventRepository;
-    UserRepository userRepository;
-    CategoryRepository categoryRepository;
-    RequestRepository requestRepository;
-    LocationRepository locationRepository;
-    StatsClient statsClient;
-    ObjectMapper objectMapper;
+    final EventRepository eventRepository;
+    final UserRepository userRepository;
+    final CategoryRepository categoryRepository;
+    final RequestRepository requestRepository;
+    final LocationRepository locationRepository;
+    final StatsClient statsClient;
+    final ObjectMapper objectMapper;
 
     @Value("${server.application.name:ewm-service}")
-    private String applicationName;
+    String applicationName;
 
     @Override
     public List<EventFullDto> getAllEventsAdmin(EventAdminParamsDto eventParamsAdmin) {

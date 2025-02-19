@@ -18,13 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PublicCategoryController {
     CategoryService categoryService;
 
     @GetMapping
     public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {
+                                           @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Запрос на получение категорий списком с размерами");
         return categoryService.getCategory(from, size);
     }
