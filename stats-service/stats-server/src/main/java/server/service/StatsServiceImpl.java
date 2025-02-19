@@ -4,15 +4,15 @@ import dto.StatDto;
 import dto.StatInDto;
 import dto.StatResponseDto;
 import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import server.model.Stats;
 import server.model.mapper.StatMapper;
 import server.repository.StatsRepository;
-import server.exception.ValidationException;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,8 +34,7 @@ public class StatsServiceImpl implements StatsService {
     @Transactional(readOnly = true)
     public List<StatResponseDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         if (start.isAfter(end)) {
-            throw new ValidationException("Дата начала start: " + start + "и дата окончания end: " + end
-                    + "не могут быть равны или противоречить друг другу");
+            throw new InvalidParameterException("Дата начала start: " + start + "и дата окончания end: " + end + "не могут быть равны или противоречить друг другу");
         }
         if (unique) {
             if (uris != null) {

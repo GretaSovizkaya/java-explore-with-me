@@ -12,7 +12,7 @@ import java.util.Map;
 public interface EventService {
     List<EventFullDto> getAllEventsAdmin(EventAdminParamsDto eventAdminParams);
 
-    EventFullDto updateEventsAdmin(Long eventId, UpdateEventAdminDto updateEvent);
+    EventFullDto updateEventsAdmin(Long eventId, UpdateEventAdminRequestDto updateEvent);
 
     List<EventShortDto> getEventsByUserId(Long userId, Integer from, Integer size);
 
@@ -20,7 +20,7 @@ public interface EventService {
 
     EventFullDto getEventsByUserIdAndEventId(Long userId, Long eventId);
 
-    EventFullDto updateEventsByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserDto eventUpdate);
+    EventFullDto updateEventsByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequestDto eventUpdate);
 
     List<ParticipationRequestDto> getAllParticipationRequestsByOwner(Long userId, Long eventId);
 
@@ -30,4 +30,5 @@ public interface EventService {
 
     Map<String, List<ParticipationRequestDto>> approveRequests(final Long userId, final Long eventId,
                                                                final EventRequestStatusUpdateRequestDto requestUpdateDto);
+
 }

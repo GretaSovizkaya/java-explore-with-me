@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class StatsClient extends BaseClient {
-    @Autowired
-    public StatsClient(@Value("${stats-service.url}") String serviceUrl, RestTemplateBuilder builder) {
+public class StatsClient  extends BaseClient {
 
+    @Autowired
+    public StatsClient(@Value("${client.url}") String serviceUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serviceUrl + ""))
@@ -25,8 +25,8 @@ public class StatsClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> sendHit(StatDto hitDto) {
-        return post("/hit", hitDto);
+    public ResponseEntity<Object> sendHit(StatDto inDto) {
+        return post("/hit", inDto);
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
@@ -38,4 +38,5 @@ public class StatsClient extends BaseClient {
         );
         return get("/stats?start={start}&end={end}&uris=uris&unique={unique}", params);
     }
+
 }

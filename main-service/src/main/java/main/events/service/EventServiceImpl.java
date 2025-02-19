@@ -33,6 +33,7 @@ import main.requests.repository.RequestRepository;
 import main.users.model.User;
 import main.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,10 +47,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+//@SpringBootApplication(scanBasePackages = {"client"})
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     UserRepository userRepository;
@@ -57,7 +59,6 @@ public class EventServiceImpl implements EventService {
     RequestRepository requestRepository;
     LocationRepository locationRepository;
     StatsClient statsClient;
-    LocationMapper locationMapper;
     ObjectMapper objectMapper;
 
     @Value("${server.application.name:ewm-service}")
@@ -118,7 +119,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto updateEventsAdmin(Long eventId, UpdateEventAdminDto updateEvent) {
+    public EventFullDto updateEventsAdmin(Long eventId, UpdateEventAdminRequestDto updateEvent) {
         Event oldEvent = checkEvent(eventId);
 
         if (oldEvent.getEventStatus().equals(EventStatus.PUBLISHED) || oldEvent.getEventStatus().equals(EventStatus.CANCELED)) {
@@ -194,7 +195,7 @@ public class EventServiceImpl implements EventService {
         event.setCreatedDate(createdOn);
 
         if (newEventDto.getLocation() != null) {
-            Location location = locationRepository.save(locationMapper.toLocation(newEventDto.getLocation()));
+            Location location = locationRepository.save(LocationMapper.toLocation(newEventDto.getLocation()));
             event.setLocation(location);
         }
 
@@ -207,7 +208,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto updateEventsByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserDto eventUpdate) {
+    public EventFullDto updateEventsByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequestDto eventUpdate) {
         checkUser(userId);
         Event oldEvent = checkEvenByInitiatorAndEventId(userId, eventId);
 
@@ -435,7 +436,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEvent.getLocation() != null) {
-            event.setLocation(locationMapper.toLocation(updateEvent.getLocation()));
+            event.setLocation(LocationMapper.toLocation(updateEvent.getLocation()));
         }
 
         if (updateEvent.getTitle() != null && !updateEvent.getTitle().isBlank()) {

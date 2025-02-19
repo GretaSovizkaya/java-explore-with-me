@@ -16,7 +16,6 @@ import main.requests.repository.RequestRepository;
 import main.users.model.User;
 import main.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,45 +28,54 @@ public class RequestServiceImpl implements RequestService {
     RequestRepository requestRepository;
     UserRepository userRepository;
     EventRepository eventRepository;
-    RequestMapper requestMapper;
 
     @Override
-    @Transactional
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+        User user = checkUser(userId);
 
-        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
-            throw new RuntimeException("User already has a request for this event");
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие с id= " + eventId + " не найдено"));
+        LocalDateTime createdOn = LocalDateTime.now();
+        validateNewRequest(event, userId, eventId);
+        Request request = new Request();
+        request.setCreated(createdOn);
+        request.setRequester(user);
+        request.setEvent(event);
+
+        if (event.isRequestModeration()) {
+            request.setStatus(RequestStatus.PENDING);
+        } else {
+            request.setStatus(RequestStatus.CONFIRMED);
         }
 
-        Request request = Request.builder()
-                .requester(user)
-                .event(event)
-                .status(RequestStatus.PENDING)
-                .created(LocalDateTime.now())
-                .build();
+        requestRepository.save(request);
 
-        return requestMapper.toParticipationRequestDto(requestRepository.save(request));
+        if (event.getParticipantLimit() == 0) {
+            request.setStatus(RequestStatus.CONFIRMED);
+        }
+
+        return RequestMapper.toParticipationRequestDto(request);
     }
+
 
     @Override
     public List<ParticipationRequestDto> getRequestByUserId(Long userId) {
-        return requestRepository.findAllByRequesterId(userId).stream()
-                .map(RequestMapper::toParticipationRequestDto)
-                .collect(Collectors.toList());
+        checkUser(userId);
+        List<Request> result = requestRepository.findAllByRequesterId(userId);
+        return result.stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
-        Request request = requestRepository.findByIdAndRequesterId(requestId, userId)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
-
+        checkUser(userId);
+        Request request = requestRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(
+                () -> new NotFoundException("Запрос с id= " + requestId + " не найден"));
+        if (request.getStatus().equals(RequestStatus.CANCELED) || request.getStatus().equals(RequestStatus.REJECTED)) {
+            throw new ValidatetionConflict("Запрос не подтвержден");
+        }
         request.setStatus(RequestStatus.CANCELED);
-        return requestMapper.toParticipationRequestDto(requestRepository.save(request));
+        Request requestAfterSave = requestRepository.save(request);
+        return RequestMapper.toParticipationRequestDto(requestAfterSave);
     }
 
     private User checkUser(Long userId) {

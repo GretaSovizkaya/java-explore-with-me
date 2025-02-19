@@ -9,6 +9,6 @@ import main.events.model.enums.EventUserState;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEventUserDto extends UpdateEventBaseDto {
+public class UpdateEventUserRequestDto extends UpdateEventBaseDto {
     EventUserState stateAction;
 }
