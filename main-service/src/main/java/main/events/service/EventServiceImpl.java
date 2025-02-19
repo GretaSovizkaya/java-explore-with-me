@@ -1,6 +1,7 @@
 package main.events.service;
 
 import client.StatsClient;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.StatDto;
 import dto.StatResponseDto;
@@ -32,19 +33,19 @@ import main.requests.repository.RequestRepository;
 import main.users.model.User;
 import main.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SpringBootApplication(scanBasePackages = {"client"})  // для Idea
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -367,39 +368,27 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getViews(List<Event> events) {
-        // Формируем список URI для запроса статистики
         List<String> uris = events.stream()
                 .map(event -> String.format("/events/%s", event.getId()))
                 .collect(Collectors.toList());
 
-        // Находим самую раннюю дату создания события
-        LocalDateTime earliestDate = events.stream()
+        List<LocalDateTime> startDates = events.stream()
                 .map(Event::getCreatedDate)
+                .collect(Collectors.toList());
+        LocalDateTime earliestDate = startDates.stream()
                 .min(LocalDateTime::compareTo)
                 .orElse(null);
-
-        // Создаем мапу для хранения результатов
         Map<Long, Long> viewStatsMap = new HashMap<>();
 
-        // Если найдена самая ранняя дата, запрашиваем статистику
         if (earliestDate != null) {
-            // Получаем статистику через StatsClient
-            List<StatResponseDto> statResponseDtos = statsClient.getStats(
-                    earliestDate,
-                    LocalDateTime.now(),
-                    uris,
-                    true // Уникальные просмотры
-            );
+            ResponseEntity<Object> response = statsClient.getStats(earliestDate.toString(), LocalDateTime.now().toString(), uris, true); ///????
+            List<StatResponseDto> statOutDtoList = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
+            }); ///// ????
 
-            // Преобразуем результат в мапу: eventId -> hits
-            viewStatsMap = statResponseDtos.stream()
-                    .filter(statDto -> statDto.getUri().startsWith("/events/"))
-                    .collect(Collectors.toMap(
-                            statDto -> Long.parseLong(statDto.getUri().substring("/events/".length())),
-                            StatResponseDto::getHits
-                    ));
+            viewStatsMap = statOutDtoList.stream()
+                    .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
+                    .collect(Collectors.toMap(statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())), StatResponseDto::getHits));
         }
-
         return viewStatsMap;
     }
 
