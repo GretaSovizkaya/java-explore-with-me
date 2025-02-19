@@ -10,7 +10,6 @@ import main.categories.dto.CategoryDto;
 import main.categories.dto.CategoryRequestDto;
 import main.categories.service.CategoryService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

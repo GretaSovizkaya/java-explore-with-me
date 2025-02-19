@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class StatsClient  extends BaseClient {
+public class StatsClient extends BaseClient {
 
     @Autowired
     public StatsClient(@Value("${client.url}") String serviceUrl, RestTemplateBuilder builder) {
@@ -36,7 +36,7 @@ public class StatsClient  extends BaseClient {
                 "uris", uris,
                 "unique", unique
         );
-        return get("/stats?start={start}&end={end}&uris=uris&unique={unique}", params);
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", params);
     }
 
 }
