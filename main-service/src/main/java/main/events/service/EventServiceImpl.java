@@ -57,7 +57,6 @@ public class EventServiceImpl implements EventService {
     RequestRepository requestRepository;
     LocationRepository locationRepository;
     StatsClient statsClient;
-    RequestMapper requestMapper;
     LocationMapper locationMapper;
     ObjectMapper objectMapper;
 

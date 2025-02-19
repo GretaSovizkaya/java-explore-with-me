@@ -1,7 +1,7 @@
 
 package server.contoller;
 
-import dto.StatDto;
+import dto.StatInDto;
 import dto.StatResponseDto;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -37,8 +37,8 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveEndpointHit(@Valid @RequestBody StatDto endpointHitDto) {
-        log.info("Saving endpoint hit: {}", endpointHitDto);
-        statsService.saveHit(endpointHitDto);
+    public void saveEndpointHit(@Valid @RequestBody StatInDto statInDto) {
+        log.info("Saving endpoint hit: {}", statInDto);
+        statsService.saveHit(statInDto);
     }
 }

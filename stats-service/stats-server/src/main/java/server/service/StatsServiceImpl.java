@@ -1,6 +1,7 @@
 package server.service;
 
 import dto.StatDto;
+import dto.StatInDto;
 import dto.StatResponseDto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -20,14 +21,13 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsServiceImpl implements StatsService {
     StatsRepository statsRepository;
-    StatMapper statMapper;
 
     @Override
     @Transactional
-    public StatDto saveHit(StatDto endpointHitDto) {
-        Stats stats = statMapper.toStat(endpointHitDto);
+    public StatDto saveHit(StatInDto statInDto) {
+        Stats stats = StatMapper.toStat(statInDto);
 
-        return statMapper.toStatDto(statsRepository.save(stats));
+        return StatMapper.toStatDto(statsRepository.save(stats));
     }
 
     @Override

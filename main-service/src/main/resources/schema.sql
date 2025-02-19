@@ -5,7 +5,7 @@ drop table IF EXISTS events CASCADE;
 drop table IF EXISTS compilations CASCADE;
 drop table IF EXISTS compilations_to_event CASCADE;
 drop table If EXISTS requests CASCADE;
-drop table If EXISTS comments CASCADE;
+
 create TABLE IF NOT EXISTS users (
     id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE,
     name  VARCHAR(250)        NOT NULL,
