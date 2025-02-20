@@ -2,10 +2,7 @@ package main.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import main.location.dto.LocationDto;
@@ -39,5 +36,7 @@ public class NewEventDto {
     int participantLimit;
     @Builder.Default
     boolean requestModeration = true;
+    @NotBlank(message = "Название события не может быть пустым")
+    @Size(min = 3, max = 120, message = "Название события должно содержать от 3 до 120 символов")
     String title;
 }
