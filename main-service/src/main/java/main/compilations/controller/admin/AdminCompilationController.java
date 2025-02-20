@@ -10,7 +10,6 @@ import main.compilations.dto.CompilationResponseDto;
 import main.compilations.dto.NewCompilationDto;
 import main.compilations.service.CompilationService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import main.requests.dto.ParticipationRequestDto;
 import main.requests.service.RequestService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

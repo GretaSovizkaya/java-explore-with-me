@@ -9,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import main.compilations.dto.CompilationResponseDto;
 import main.compilations.service.CompilationService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/compilations")
@@ -34,7 +34,7 @@ public class PublicCompilationController {
 
     @GetMapping("/{compId}")
     public CompilationResponseDto findCompilationById(@PathVariable Long compId) {
-        log.info("Запрос на получение подборки с id =  {} ", + compId);
+        log.info("Запрос на получение подборки с id =  {} ", +compId);
         return compilationService.findCompilationById(compId);
     }
 }
