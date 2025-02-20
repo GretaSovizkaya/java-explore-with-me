@@ -4,42 +4,45 @@ import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import main.requests.dto.ParticipationRequestDto;
 import main.requests.service.RequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/{userId}/requests")
+@Slf4j
 @RequiredArgsConstructor
+@Validated
+@RequestMapping(path = "users/{userId}/requests")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RequestPrivateController {
 
     RequestService requestService;
 
     @PostMapping
-    public ResponseEntity<ParticipationRequestDto> addRequest(
-            @PathVariable @Min(0) Long userId,
-            @RequestParam @Min(0) Long eventId) {
-        ParticipationRequestDto request = requestService.createRequest(userId, eventId);
-        return new ResponseEntity<>(request, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ParticipationRequestDto addRequest(@PathVariable(value = "userId") @Min(0) Long userId,
+                                              @RequestParam(name = "eventId") @Min(0) Long eventId) {
+        log.info("Запрос на создание запроса на участие в событии с id= {}  пользователя с id= {}",
+                eventId, userId);
+        return requestService.createRequest(userId, eventId);
     }
 
     @GetMapping
-    public ResponseEntity<List<ParticipationRequestDto>> getAllRequests(
-            @PathVariable @Min(0) Long userId) {
-        List<ParticipationRequestDto> requests = requestService.getRequestByUserId(userId);
-        return new ResponseEntity<>(requests, HttpStatus.OK);
+    public List<ParticipationRequestDto> getAllRequests(@PathVariable(value = "userId") @Min(0) Long userId) {
+        log.info("Запрос на получение всех запросов на участие в событиях пользователя с id= {}", userId);
+        return requestService.getRequestByUserId(userId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    public ResponseEntity<ParticipationRequestDto> cancelRequest(
-            @PathVariable @Min(0) Long userId,
-            @PathVariable @Min(0) Long requestId) {
-        ParticipationRequestDto canceledRequest = requestService.cancelRequest(userId, requestId);
-        return new ResponseEntity<>(canceledRequest, HttpStatus.OK);
+    public ParticipationRequestDto canceledRequest(@PathVariable(value = "userId") @Min(0) Long userId,
+                                                   @PathVariable(value = "requestId") @Min(0) Long requestId) {
+        log.info("Запрос на отмену запроса пользователем с id= {}", userId);
+        return requestService.cancelRequest(userId, requestId);
     }
 }

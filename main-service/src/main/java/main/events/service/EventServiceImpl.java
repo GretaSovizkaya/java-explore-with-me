@@ -120,15 +120,15 @@ public class EventServiceImpl implements EventService {
         Event oldEvent = checkEvent(eventId);
 
         if (oldEvent.getEventStatus().equals(EventStatus.PUBLISHED) || oldEvent.getEventStatus().equals(EventStatus.CANCELED)) {
-            throw new ValidatetionConflict("Событие со статусом status= " + oldEvent.getEventStatus() + "изменить нельзя");
+            throw new ValidatetionConflict("Событие со статусом " + oldEvent.getEventStatus() + " изменить нельзя");
         }
 
         Event eventForUpdate = eventUpdateBase(oldEvent, updateEvent);
 
+        // ✅ Разрешаем обновлять дату, если она не в прошлом (исключаем проверку "30 минут от публикации")
         if (updateEvent.getEventDate() != null) {
-            if (updateEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new ValidationException("Некорректные параметры даты. Дата начала события не может быть ранее " +
-                        "часа от момента публикации.");
+            if (updateEvent.getEventDate().isBefore(LocalDateTime.now())) {
+                throw new ValidationException("Некорректные параметры даты. Дата начала события не может быть в прошлом.");
             }
             eventForUpdate.setEventDate(updateEvent.getEventDate());
         }
@@ -136,16 +136,15 @@ public class EventServiceImpl implements EventService {
         if (updateEvent.getStateAction() != null) {
             if (EventAdminState.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
                 eventForUpdate.setEventStatus(EventStatus.PUBLISHED);
-
             } else if (EventAdminState.REJECT_EVENT.equals(updateEvent.getStateAction())) {
                 eventForUpdate.setEventStatus(EventStatus.CANCELED);
             }
         }
 
         eventRepository.save(eventForUpdate);
-
         return EventMapper.toEventFullDto(eventForUpdate);
     }
+
 
     @Override
     public List<EventShortDto> getEventsByUserId(Long userId, Integer from, Integer size) {
@@ -263,7 +262,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> getAllEventsPublic(EventParamsDto eventParams, HttpServletRequest request) {
-
         if (eventParams.getRangeEnd() != null && eventParams.getRangeStart() != null) {
             if (eventParams.getRangeEnd().isBefore(eventParams.getRangeStart())) {
                 throw new ValidationException("Дата окончания не может быть раньше даты начала");
@@ -316,15 +314,16 @@ public class EventServiceImpl implements EventService {
         List<Event> resultEvents = eventRepository.findAll(specification, pageable).getContent();
         List<EventShortDto> result = resultEvents
                 .stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
+
         Map<Long, Long> viewStatsMap = getViews(resultEvents);
 
-        for (EventShortDto event : result) {
-            Long viewsFromMap = viewStatsMap.getOrDefault(event.getId(), 0L);
-            event.setViews(viewsFromMap);
+        for (EventShortDto eventDto : result) {
+            eventDto.setViews(viewStatsMap.getOrDefault(eventDto.getId(), 0L));
         }
 
         return result;
     }
+
 
     private List<Request> checkRequestOrEventList(Long eventId, List<Long> requestId) {
         return requestRepository.findByEventIdAndIdIn(eventId, requestId).orElseThrow(
@@ -378,13 +377,27 @@ public class EventServiceImpl implements EventService {
         Map<Long, Long> viewStatsMap = new HashMap<>();
 
         if (earliestDate != null) {
-            ResponseEntity<Object> response = statsClient.getStats(earliestDate.toString(), LocalDateTime.now().toString(), uris, true); ///????
-            List<StatResponseDto> statOutDtoList = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
-            }); ///// ????
+            ResponseEntity<Object> response = statsClient.getStats(
+                    earliestDate.toString(),
+                    LocalDateTime.now().toString(),
+                    uris,
+                    true
+            );
 
-            viewStatsMap = statOutDtoList.stream()
-                    .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
-                    .collect(Collectors.toMap(statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())), StatResponseDto::getHits));
+            if (response.getBody() instanceof List<?>) {
+                List<?> rawList = (List<?>) response.getBody();
+                List<StatResponseDto> statOutDtoList = objectMapper.convertValue(rawList, new TypeReference<List<StatResponseDto>>() {
+                });
+
+                viewStatsMap = statOutDtoList.stream()
+                        .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
+                        .collect(Collectors.toMap(
+                                statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())),
+                                StatResponseDto::getHits
+                        ));
+            } else {
+                log.warn("Ошибка десериализации: response.getBody() не является списком");
+            }
         }
         return viewStatsMap;
     }
@@ -434,6 +447,18 @@ public class EventServiceImpl implements EventService {
 
         if (updateEvent.getLocation() != null) {
             event.setLocation(LocationMapper.toLocation(updateEvent.getLocation()));
+        }
+
+        if (updateEvent.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEvent.getParticipantLimit());
+        }
+
+        if (updateEvent.getPaid() != null) {
+            event.setPaid(updateEvent.getPaid());
+        }
+
+        if (updateEvent.getRequestModeration() != null) {
+            event.setRequestModeration(updateEvent.getRequestModeration());
         }
 
         if (updateEvent.getTitle() != null && !updateEvent.getTitle().isBlank()) {

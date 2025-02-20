@@ -39,12 +39,10 @@ public class EventPrivateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventFullDto addEvent(@PathVariable(value = "userId") @Min(1) Long userId,
-                                 @RequestBody @Valid NewEventDto input) {
-        log.info("Cоздание события от пользователя с id= {}", userId);
-        EventFullDto eventFullDto = eventService.createEvents(userId, input);
-        log.info("Cобытия от пользователя с id= {} создано", userId);
-        return eventFullDto;
+    public EventFullDto create(@PathVariable long userId,
+                               @RequestBody @Valid NewEventDto requestBody) {
+        log.info("==> Create new event {} by userId {}", requestBody, userId);
+        return eventService.createEvents(userId, requestBody);
     }
 
     @GetMapping("/{eventId}")

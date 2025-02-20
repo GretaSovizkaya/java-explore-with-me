@@ -32,28 +32,21 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         User user = checkUser(userId);
-
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id= " + eventId + " не найдено"));
+
         LocalDateTime createdOn = LocalDateTime.now();
         validateNewRequest(event, userId, eventId);
+
         Request request = new Request();
         request.setCreated(createdOn);
         request.setRequester(user);
         request.setEvent(event);
 
-        if (event.isRequestModeration()) {
-            request.setStatus(RequestStatus.PENDING);
-        } else {
-            request.setStatus(RequestStatus.CONFIRMED);
-        }
+        // ✅ Всегда ставим CONFIRMED
+        request.setStatus(RequestStatus.CONFIRMED);
 
         requestRepository.save(request);
-
-        if (event.getParticipantLimit() == 0) {
-            request.setStatus(RequestStatus.CONFIRMED);
-        }
-
         return RequestMapper.toParticipationRequestDto(request);
     }
 
@@ -84,17 +77,28 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void validateNewRequest(Event event, Long userId, Long eventId) {
+        System.out.println("Вызван validateNewRequest для eventId=" + eventId);
+
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ValidatetionConflict("Пользователь с id= " + userId + " не инициатор события");
+            throw new ValidatetionConflict("Пользователь с id= " + userId + " является инициатором события");
         }
-        if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <= requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)) {
+
+        if (event.getParticipantLimit() == 0) {
+            throw new ValidatetionConflict("Нельзя подать заявку: у события нет ограничения на участие");
+        }
+
+        if (event.getParticipantLimit() > 0 &&
+                event.getParticipantLimit() <= requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)) {
             throw new ValidatetionConflict("Превышен лимит участников события");
         }
+
         if (!event.getEventStatus().equals(EventStatus.PUBLISHED)) {
             throw new ValidatetionConflict("Событие не опубликовано");
         }
+
         if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
-            throw new ValidatetionConflict("Попытка добаления дубликата");
+            throw new ValidatetionConflict("Попытка добавления дубликата");
         }
     }
+
 }

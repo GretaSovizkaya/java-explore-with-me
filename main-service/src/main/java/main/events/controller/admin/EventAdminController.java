@@ -12,6 +12,7 @@ import main.events.dto.EventAdminParamsDto;
 import main.events.dto.EventFullDto;
 import main.events.dto.UpdateEventAdminRequestDto;
 import main.events.service.EventService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class EventAdminController {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping
-    public List<EventFullDto> getEventsAdmin(
+    public ResponseEntity<List<EventFullDto>> getEventsAdmin(
             @RequestParam(required = false) final List<Long> users,
             @RequestParam(required = false) final List<String> states,
             @RequestParam(required = false) final List<Long> categories,
@@ -39,6 +40,7 @@ public class EventAdminController {
             @RequestParam(defaultValue = "0") @PositiveOrZero final int from,
             @RequestParam(defaultValue = "10") @Positive final int size) {
         log.info("запрос на получение всех событий (ADMIN)");
+        try {
         LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : LocalDateTime.now();
         LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : LocalDateTime.now().plusYears(20);
         EventAdminParamsDto eventAdminParams = new EventAdminParamsDto();
@@ -49,14 +51,34 @@ public class EventAdminController {
         eventAdminParams.setRangeEnd(end);
         eventAdminParams.setFrom(from);
         eventAdminParams.setSize(size);
-        return eventService.getAllEventsAdmin(eventAdminParams);
+            List<EventFullDto> events = eventService.getAllEventsAdmin(eventAdminParams);
+            return ResponseEntity.ok(events);
+
+        } catch (Exception e) {
+            log.error("Ошибка при получении событий: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventAdmin(@PathVariable(value = "eventId") @Min(1) Long eventId,
-                                         @RequestBody @Valid UpdateEventAdminRequestDto inputUpdate) {
+    public ResponseEntity<?> updateEventAdmin(@PathVariable(value = "eventId") @Min(1) Long eventId,
+                                              @RequestBody @Valid UpdateEventAdminRequestDto inputUpdate) {
+        log.info("Запрос на обновление события с id={}", eventId);
 
-        log.info("Запрос на обновление списка событий");
-        return eventService.updateEventsAdmin(eventId, inputUpdate);
+        try {
+            EventFullDto updatedEvent = eventService.updateEventsAdmin(eventId, inputUpdate);
+
+            if (updatedEvent == null) {
+                log.warn("Обновление события не выполнено: eventService вернул null");
+                return ResponseEntity.badRequest().body("Ошибка обновления события: результат пуст");
+            }
+
+            log.info("Обновлённое событие: {}", updatedEvent);
+            return ResponseEntity.ok(updatedEvent);
+
+        } catch (Exception e) {
+            log.error("Ошибка при обновлении события: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body("Ошибка обновления события: " + e.getMessage());
+        }
     }
 }

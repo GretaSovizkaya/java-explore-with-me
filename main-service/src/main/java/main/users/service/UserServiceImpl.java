@@ -1,8 +1,6 @@
 package main.users.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import main.exceptions.NotFoundException;
 import main.users.dto.UserCreateRequestDto;
 import main.users.dto.UserDto;
@@ -18,9 +16,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -53,4 +50,5 @@ public class UserServiceImpl implements UserService {
         }
         return listUserResponseDto;
     }
+
 }

@@ -11,14 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 import main.events.dto.EventFullDto;
 import main.events.dto.EventParamsDto;
 import main.events.dto.EventShortDto;
+import main.events.mapper.EventParamsMapper;
 import main.events.service.EventService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -43,22 +42,8 @@ public class EventPublicController {
             @RequestParam(defaultValue = "10") @Positive final int size,
             final HttpServletRequest request) {
 
-        LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : LocalDateTime.now();
-        LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : LocalDateTime.now().plusYears(20);
-
-        EventParamsDto eventParams = new EventParamsDto();
-        eventParams.setText(text);
-        eventParams.setCategories(categories);
-        eventParams.setPaid(paid);
-        eventParams.setRangeStart(start);
-        eventParams.setRangeEnd(end);
-        eventParams.setOnlyAvailable(onlyAvailable);
-        eventParams.setFrom(from);
-        eventParams.setSize(size);
-        if (Objects.nonNull(sort)) {
-            eventParams.setSort(sort.toString());
-        }
-
+        EventParamsDto eventParams = EventParamsMapper.toEventParamsDto(
+                text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         log.info("Запрос Public на получения событий с фильтром");
         return eventService.getAllEventsPublic(eventParams, request);
 

@@ -1,44 +1,52 @@
 package main.users.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import main.users.dto.UserCreateRequestDto;
 import main.users.dto.UserDto;
 import main.users.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
 
-    UserService userService;
+    UserService service;
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(
-            @RequestParam(required = false) List<Long> ids,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
-        List<UserDto> users = userService.get(ids, from, size);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                  @RequestParam(defaultValue = "10") @Positive Integer size) {
+        log.info("Запрос на получение списка пользователей");
+
+        return service.get(ids, from, size);
     }
 
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateRequestDto userCreateRequestDto) {
-        UserDto createdUser = userService.create(userCreateRequestDto);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto createUsers(@RequestBody @Valid UserCreateRequestDto userCreateRequestDto) {
+        log.info("Создание User: {}", userCreateRequestDto);
+        UserDto newUserDto = service.create(userCreateRequestDto);
+        log.info("Создан User: {}", newUserDto);
+        return newUserDto;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUsers(@PathVariable long id) {
+        log.info("Удалениее User по: {}", id);
+        service.delete(id);
+        log.info("Успешно удален");
     }
 }

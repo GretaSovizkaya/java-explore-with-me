@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import main.compilations.dto.CompilationRequestDto;
 import main.compilations.dto.CompilationResponseDto;
 import main.compilations.dto.NewCompilationDto;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin/compilations")
 @RequiredArgsConstructor
@@ -21,23 +23,23 @@ public class AdminCompilationController {
     CompilationService compilationService;
 
     @PostMapping
-    public ResponseEntity<CompilationResponseDto> createCompilation(
-            @RequestBody @Valid CompilationRequestDto compilationDto) {
-        CompilationResponseDto createdCompilation = compilationService.createCompilation(compilationDto);
-        return new ResponseEntity<>(createdCompilation, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompilationResponseDto createCompilation(@RequestBody @Valid CompilationRequestDto compilationDto) {
+        log.info("Запрос на создание подборки событий");
+        return compilationService.createCompilation(compilationDto);
     }
 
     @PatchMapping("/{compId}")
-    public ResponseEntity<CompilationResponseDto> updateCompilation(
-            @PathVariable Long compId,
-            @RequestBody @Valid NewCompilationDto update) {
-        CompilationResponseDto updatedCompilation = compilationService.updateCompilation(compId, update);
-        return new ResponseEntity<>(updatedCompilation, HttpStatus.OK);
+    public CompilationResponseDto updateCompilation(@RequestBody @Valid NewCompilationDto update,
+                                                    @PathVariable Long compId) {
+        log.info("Запрос на обнавление подборки событий");
+        return compilationService.updateCompilation(compId, update);
     }
 
     @DeleteMapping("/{compId}")
-    public ResponseEntity<Void> deleteCompilation(@PathVariable Long compId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCompilation(@PathVariable Long compId) {
+        log.info("Запрос на удаление подборки событий");
         compilationService.deleteCompilation(compId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
