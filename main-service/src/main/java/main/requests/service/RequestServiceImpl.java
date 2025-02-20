@@ -83,13 +83,16 @@ public class RequestServiceImpl implements RequestService {
             throw new ValidatetionConflict("Пользователь с id= " + userId + " является инициатором события");
         }
 
-        if (event.getParticipantLimit() == 0) {
+        /*if (event.getParticipantLimit() == 0) {
             throw new ValidatetionConflict("Нельзя подать заявку: у события нет ограничения на участие");
-        }
+        }*/
 
         if (event.getParticipantLimit() > 0 &&
                 event.getParticipantLimit() <= requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)) {
             throw new ValidatetionConflict("Превышен лимит участников события");
+        }
+        if (event.getTitle() == null || event.getTitle().length() < 3 || event.getTitle().length() > 120) {
+            throw new ValidatetionConflict("Длина заголовка события должна быть от 3 до 120 символов.");
         }
 
         if (!event.getEventStatus().equals(EventStatus.PUBLISHED)) {

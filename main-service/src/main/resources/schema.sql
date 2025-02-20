@@ -38,7 +38,7 @@ create TABLE IF NOT EXISTS events (
     published_date     TIMESTAMP WITHOUT TIME ZONE,
     request_moderation BOOLEAN DEFAULT true,
     status             VARCHAR(200),
-    title              VARCHAR(255)                NOT NULL,
+    title              VARCHAR(120)                NOT NULL,
     CONSTRAINT fk_event_to_user FOREIGN KEY (initiator_id) REFERENCES users (id),
     CONSTRAINT fk_event_to_category FOREIGN KEY (category_id) REFERENCES categories (id),
     CONSTRAINT fk_location FOREIGN KEY (location_id) REFERENCES locations (id)
@@ -57,7 +57,7 @@ create TABLE IF NOT EXISTS requests (
 create TABLE IF NOT EXISTS compilations (
     id     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE,
     pinned BOOLEAN      NOT NULL,
-    title  VARCHAR(255) NOT NULL
+    title  VARCHAR(120) NOT NULL
     );
 
 create TABLE IF NOT EXISTS compilations_to_event (
