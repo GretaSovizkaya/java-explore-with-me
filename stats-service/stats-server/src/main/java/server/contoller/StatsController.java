@@ -8,8 +8,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import server.service.StatsService;
@@ -21,23 +21,21 @@ import java.util.List;
 @RestController
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/stats")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsController {
     StatsService statsService;
 
     @GetMapping("/stats")
-    public ResponseEntity<List<StatResponseDto>> getStats(@RequestParam LocalDateTime start,
-                                                          @RequestParam LocalDateTime end,
-                                                          @RequestParam(required = false) List<String> uris,
-                                                          @RequestParam(defaultValue = "false") boolean unique) {
-        List<StatResponseDto> stats = statsService.getStats(start, end, uris, unique);
-        return ResponseEntity.ok(stats);
+    public List<StatResponseDto> getStats(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+                                          @RequestParam(defaultValue = "", required = false) List<String> uris,
+                                          @RequestParam(defaultValue = "false", required = false) boolean unique) {
+        return statsService.getStats(start, end, uris, unique);
     }
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveEndpointHit(@Valid @RequestBody StatInDto statInDto) {
+    public void saveEndpointHit(@RequestBody @Valid StatInDto statInDto) {
         log.info("Saving endpoint hit: {}", statInDto);
         statsService.saveHit(statInDto);
     }

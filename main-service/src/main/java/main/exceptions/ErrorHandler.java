@@ -67,6 +67,7 @@ public class ErrorHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
     @ExceptionHandler({ConflictStateException.class, ConflictTimeException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflictStateException(RuntimeException e) {

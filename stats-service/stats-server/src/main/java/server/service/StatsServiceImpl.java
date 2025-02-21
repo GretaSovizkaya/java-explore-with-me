@@ -36,16 +36,17 @@ public class StatsServiceImpl implements StatsService {
         if (start.isAfter(end)) {
             throw new InvalidParameterException("Дата начала start: " + start + "и дата окончания end: " + end + "не могут быть равны или противоречить друг другу");
         }
+
         if (unique) {
-            if (uris != null) {
-                return statsRepository.findAllWithUniqueIpWithUris(uris, start, end);
+            if (uris == null || uris.isEmpty()) {
+                return statsRepository.findAllWithUniqueIpWithoutUris(start, end);
             }
-            return statsRepository.findAllWithUniqueIpWithoutUris(start, end);
+            return statsRepository.findAllWithUniqueIpWithUris(uris, start, end);
         } else {
-            if (uris != null) {
-                return statsRepository.findAllWithUris(uris, start, end);
+            if (uris == null || uris.isEmpty()) {
+                return statsRepository.findAllWithoutUris(start, end);
             }
-            return statsRepository.findAllWithoutUris(start, end);
+            return statsRepository.findAllWithUris(uris, start, end);
         }
     }
 }

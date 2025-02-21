@@ -17,7 +17,6 @@ import main.events.mapper.EventMapper;
 import main.events.model.Event;
 import main.events.model.enums.EventAdminState;
 import main.events.model.enums.EventStatus;
-import main.events.model.enums.EventUserState;
 import main.events.repository.EventRepository;
 import main.exceptions.*;
 import main.location.mapper.LocationMapper;
