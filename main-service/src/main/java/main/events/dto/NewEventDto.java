@@ -29,7 +29,7 @@ public class NewEventDto {
     String description;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @TimeAtLeastTwoHours //попробуем для теста
+    @TimeAtLeastTwoHours
     LocalDateTime eventDate;
     @NotNull
     @Valid

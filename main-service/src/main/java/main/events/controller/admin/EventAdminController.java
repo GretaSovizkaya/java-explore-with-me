@@ -41,16 +41,16 @@ public class EventAdminController {
             @RequestParam(defaultValue = "10") @Positive final int size) {
         log.info("запрос на получение всех событий (ADMIN)");
         try {
-        LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : LocalDateTime.now();
-        LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : LocalDateTime.now().plusYears(20);
-        EventAdminParamsDto eventAdminParams = new EventAdminParamsDto();
-        eventAdminParams.setUsers(users);
-        eventAdminParams.setStates(states);
-        eventAdminParams.setCategories(categories);
-        eventAdminParams.setRangeStart(start);
-        eventAdminParams.setRangeEnd(end);
-        eventAdminParams.setFrom(from);
-        eventAdminParams.setSize(size);
+            LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : LocalDateTime.now();
+            LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : LocalDateTime.now().plusYears(20);
+            EventAdminParamsDto eventAdminParams = new EventAdminParamsDto();
+            eventAdminParams.setUsers(users);
+            eventAdminParams.setStates(states);
+            eventAdminParams.setCategories(categories);
+            eventAdminParams.setRangeStart(start);
+            eventAdminParams.setRangeEnd(end);
+            eventAdminParams.setFrom(from);
+            eventAdminParams.setSize(size);
             List<EventFullDto> events = eventService.getAllEventsAdmin(eventAdminParams);
             return ResponseEntity.ok(events);
 
@@ -63,21 +63,6 @@ public class EventAdminController {
     @PatchMapping("/{eventId}") //
     public ResponseEntity<?> updateEventAdmin(@PathVariable(value = "eventId") @Min(1) Long eventId,
                                               @RequestBody @Valid UpdateEventAdminRequestDto inputUpdate) {
-
-
-       /* try {
-            EventFullDto updatedEvent = eventService.updateEventsAdmin(eventId, inputUpdate);
-
-            if (updatedEvent == null) {
-                log.warn("Обновление события не выполнено: eventService вернул null");
-                return ResponseEntity.badRequest().body("Ошибка обновления события: результат пуст");
-            }
-
-            log.info("Обновлённое событие: {}", updatedEvent);
-            return ResponseEntity.ok(updatedEvent);
-
-        } catch (Exception e) {
-            log.error("Ошибка при обновлении события: {}", e.getMessage(), e);*/
         log.info("Запрос на обновление события с id={}", eventId);
         return ResponseEntity.ok(eventService.updateEventsAdmin(eventId, inputUpdate));
 

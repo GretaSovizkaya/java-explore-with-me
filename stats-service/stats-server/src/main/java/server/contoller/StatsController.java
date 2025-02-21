@@ -4,6 +4,7 @@ package server.contoller;
 import dto.StatInDto;
 import dto.StatResponseDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,8 +27,8 @@ public class StatsController {
     StatsService statsService;
 
     @GetMapping("/stats")
-    public List<StatResponseDto> getStats(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public List<StatResponseDto> getStats(@RequestParam(required = false) @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                          @RequestParam(required = false) @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                           @RequestParam(defaultValue = "", required = false) List<String> uris,
                                           @RequestParam(defaultValue = "false", required = false) boolean unique) {
         return statsService.getStats(start, end, uris, unique);
