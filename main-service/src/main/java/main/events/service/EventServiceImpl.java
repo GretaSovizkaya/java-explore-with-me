@@ -19,9 +19,7 @@ import main.events.model.enums.EventAdminState;
 import main.events.model.enums.EventStatus;
 import main.events.model.enums.EventUserState;
 import main.events.repository.EventRepository;
-import main.exceptions.NotFoundException;
-import main.exceptions.ValidatetionConflict;
-import main.exceptions.ValidationException;
+import main.exceptions.*;
 import main.location.mapper.LocationMapper;
 import main.location.model.Location;
 import main.location.repository.LocationRepository;
@@ -40,6 +38,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -115,27 +114,33 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    @Override //Не исправлять - чревато падением докера!
+    @Override
+    @Transactional
     public EventFullDto updateEventsAdmin(Long eventId, UpdateEventAdminRequestDto updateEvent) {
         Event oldEvent = checkEvent(eventId);
 
-        if (oldEvent.getEventStatus().equals(EventStatus.PUBLISHED) || oldEvent.getEventStatus().equals(EventStatus.CANCELED)) {
-            throw new ValidatetionConflict("Событие со статусом " + oldEvent.getEventStatus() + " изменить нельзя");
+        if (updateEvent.getStateAction() != null) {
+            if (updateEvent.getStateAction() == EventAdminState.PUBLISH_EVENT && oldEvent.getEventStatus() != EventStatus.PENDING) {
+                throw new ConflictStateException("Невозможно опубликовать событие, так как текущий статус не PENDING");
+            }
+            if (updateEvent.getStateAction() == EventAdminState.REJECT_EVENT && oldEvent.getEventStatus() == EventStatus.PUBLISHED) {
+                throw new ConflictStateException("Нельзя отменить публикацию, так как событие уже опубликовано");
+            }
         }
 
         Event eventForUpdate = eventUpdateBase(oldEvent, updateEvent);
 
         if (updateEvent.getEventDate() != null) {
             if (updateEvent.getEventDate().isBefore(LocalDateTime.now())) {
-                throw new ValidationException("Некорректные параметры даты. Дата начала события не может быть в прошлом.");
+                throw new ConflictTimeException("Некорректные параметры даты. Дата начала события не может быть в прошлом.");
             }
             eventForUpdate.setEventDate(updateEvent.getEventDate());
         }
 
         if (updateEvent.getStateAction() != null) {
-            if (EventAdminState.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
+            if (updateEvent.getStateAction() == EventAdminState.PUBLISH_EVENT) {
                 eventForUpdate.setEventStatus(EventStatus.PUBLISHED);
-            } else if (EventAdminState.REJECT_EVENT.equals(updateEvent.getStateAction())) {
+            } else if (updateEvent.getStateAction() == EventAdminState.REJECT_EVENT) {
                 eventForUpdate.setEventStatus(EventStatus.CANCELED);
             }
         }
@@ -144,6 +149,38 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(eventForUpdate);
     }
 
+    @Override
+    @Transactional
+    public EventFullDto updateEventsByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequestDto eventUpdate) {
+        checkUser(userId);
+        Event oldEvent = checkEvenByInitiatorAndEventId(userId, eventId);
+
+        if (oldEvent.getEventStatus() == EventStatus.PUBLISHED) {
+            throw new ConflictStateException("Изменить можно только неопубликованное событие");
+        }
+
+        if (eventUpdate.getEventDate() != null && eventUpdate.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new ConflictTimeException("Время не может быть раньше, чем через два часа от текущего момента");
+        }
+
+        Event eventForUpdate = eventUpdateBase(oldEvent, eventUpdate);
+
+        if (eventUpdate.getStateAction() != null) {
+            switch (eventUpdate.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    eventForUpdate.setEventStatus(EventStatus.PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    eventForUpdate.setEventStatus(EventStatus.CANCELED);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Неизвестный статус: " + eventUpdate.getStateAction());
+            }
+        }
+
+        eventRepository.save(eventForUpdate);
+        return EventMapper.toEventFullDto(eventForUpdate);
+    }
 
 
     @Override
@@ -201,46 +238,6 @@ public class EventServiceImpl implements EventService {
         eventFullDto.setViews(0L);
         eventFullDto.setConfirmedRequests(0);
         return eventFullDto;
-    }
-
-    @Override
-    public EventFullDto updateEventsByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequestDto eventUpdate) {
-        checkUser(userId);
-        Event oldEvent = checkEvenByInitiatorAndEventId(userId, eventId);
-
-        if (oldEvent.getEventStatus().equals(EventStatus.PUBLISHED)) {
-            throw new ValidatetionConflict("Статус события в статусе status= " + oldEvent.getEventStatus() + "не может быть обновлен");
-        }
-
-        if (!oldEvent.getInitiator().getId().equals(userId)) {
-            throw new ValidatetionConflict("Пользователь с id= " + userId + " не является автором события");
-        }
-
-        Event eventForUpdate = eventUpdateBase(oldEvent, eventUpdate);
-
-        LocalDateTime newDate = eventUpdate.getEventDate();
-
-        if (newDate != null) {
-            checkDateAndTime(LocalDateTime.now(), newDate);
-            eventForUpdate.setEventDate(newDate);
-        }
-        EventUserState stateAction = eventUpdate.getStateAction();
-
-        if (stateAction != null) {
-            switch (stateAction) {
-                case SEND_TO_REVIEW:
-                    eventForUpdate.setEventStatus(EventStatus.PENDING);
-                    break;
-                case CANCEL_REVIEW:
-                    eventForUpdate.setEventStatus(EventStatus.CANCELED);
-                    break;
-            }
-        }
-        if (eventForUpdate != null) {
-            eventRepository.save(eventForUpdate);
-        }
-
-        return eventForUpdate != null ? EventMapper.toEventFullDto(eventForUpdate) : null;
     }
 
     @Override

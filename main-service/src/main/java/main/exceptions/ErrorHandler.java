@@ -67,6 +67,17 @@ public class ErrorHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    @ExceptionHandler({ConflictStateException.class, ConflictTimeException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleConflictStateException(RuntimeException e) {
+        log.error(stackToString(e));
+        return ApiError.builder()
+                .message(e.getMessage())
+                .reason("Conflict due to state or time constraints.")
+                .status("CONFLICT")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
     @ExceptionHandler({DuplicatedException.class, ValidatetionConflict.class})
     @ResponseStatus(HttpStatus.CONFLICT)

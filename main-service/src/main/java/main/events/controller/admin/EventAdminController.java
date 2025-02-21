@@ -63,9 +63,9 @@ public class EventAdminController {
     @PatchMapping("/{eventId}") //
     public ResponseEntity<?> updateEventAdmin(@PathVariable(value = "eventId") @Min(1) Long eventId,
                                               @RequestBody @Valid UpdateEventAdminRequestDto inputUpdate) {
-        log.info("Запрос на обновление события с id={}", eventId);
 
-        try {
+
+       /* try {
             EventFullDto updatedEvent = eventService.updateEventsAdmin(eventId, inputUpdate);
 
             if (updatedEvent == null) {
@@ -77,8 +77,9 @@ public class EventAdminController {
             return ResponseEntity.ok(updatedEvent);
 
         } catch (Exception e) {
-            log.error("Ошибка при обновлении события: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Ошибка обновления события: " + e.getMessage());
-        }
+            log.error("Ошибка при обновлении события: {}", e.getMessage(), e);*/
+        log.info("Запрос на обновление события с id={}", eventId);
+        return ResponseEntity.ok(eventService.updateEventsAdmin(eventId, inputUpdate));
+
     }
 }
