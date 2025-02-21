@@ -1,5 +1,6 @@
 package main.events.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -43,9 +44,10 @@ public class Event {
     @Column(name = "title", nullable = false, length = 120)
     String title;
     @TimeAtLeastTwoHours
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "event_date", nullable = false)
     LocalDateTime eventDate;
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "create_date")
     LocalDateTime createdDate;
 
@@ -58,7 +60,7 @@ public class Event {
 
     @Column(name = "participant_limit")
     Integer participantLimit;
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "published_date")
     LocalDateTime publisherDate;
 
