@@ -41,7 +41,7 @@ public class EventMapper {
                 .paid(event.isPaid())
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublisherDate())
-                .requestModeration(event.isRequestModeration())
+                .requestModeration(event.getRequestModeration())
                 .state(event.getEventStatus())
                 .title(event.getTitle())
                 .build();

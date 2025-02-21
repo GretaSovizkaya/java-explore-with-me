@@ -481,7 +481,7 @@ public class EventServiceImpl implements EventService {
 
         final List<Request> requests = requestRepository.findRequestByIdIn(requestUpdateDto.getRequestIds().stream().toList());
 
-        if (event.isRequestModeration() && event.getParticipantLimit().equals(event.getConfirmedRequests()) &&
+        if (event.getRequestModeration() && event.getParticipantLimit().equals(event.getConfirmedRequests()) &&
                 event.getParticipantLimit() != 0 && requestUpdateDto.getStatus().equals(RequestStatus.CONFIRMED)) {
             throw new ValidatetionConflict("Лимит заявок на участие в событии исчерпан.");
         }
