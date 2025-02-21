@@ -60,7 +60,7 @@ public class EventAdminController {
         }
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping("/{eventId}") //
     public ResponseEntity<?> updateEventAdmin(@PathVariable(value = "eventId") @Min(1) Long eventId,
                                               @RequestBody @Valid UpdateEventAdminRequestDto inputUpdate) {
         log.info("Запрос на обновление события с id={}", eventId);

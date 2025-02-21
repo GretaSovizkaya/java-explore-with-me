@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import main.categories.model.Category;
 import main.events.model.enums.EventStatus;
+import main.exceptions.validate.TimeAtLeastTwoHours;
 import main.location.model.Location;
 import main.users.model.User;
 
@@ -41,7 +42,7 @@ public class Event {
 
     @Column(name = "title", nullable = false, length = 120)
     String title;
-
+    @TimeAtLeastTwoHours
     @Column(name = "event_date", nullable = false)
     LocalDateTime eventDate;
 

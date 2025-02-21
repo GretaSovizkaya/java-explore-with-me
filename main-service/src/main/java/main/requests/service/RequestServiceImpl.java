@@ -44,7 +44,7 @@ public class RequestServiceImpl implements RequestService {
         request.setEvent(event);
 
         // ✅ Всегда ставим CONFIRMED
-        request.setStatus(RequestStatus.CONFIRMED);
+        request.setStatus(RequestStatus.PENDING);
 
         requestRepository.save(request);
         return RequestMapper.toParticipationRequestDto(request);

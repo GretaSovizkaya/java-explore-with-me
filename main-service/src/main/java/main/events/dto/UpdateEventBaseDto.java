@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import main.exceptions.validate.TimeAtLeastTwoHours;
 import main.location.dto.LocationDto;
 import org.hibernate.validator.constraints.Length;
 
@@ -25,6 +26,7 @@ public class UpdateEventBaseDto {
     String description;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @TimeAtLeastTwoHours
     LocalDateTime eventDate;
 
     @Valid

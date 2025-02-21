@@ -115,7 +115,7 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    @Override
+    @Override //Не исправлять - чревато падением докера!
     public EventFullDto updateEventsAdmin(Long eventId, UpdateEventAdminRequestDto updateEvent) {
         Event oldEvent = checkEvent(eventId);
 
@@ -125,7 +125,6 @@ public class EventServiceImpl implements EventService {
 
         Event eventForUpdate = eventUpdateBase(oldEvent, updateEvent);
 
-        // ✅ Разрешаем обновлять дату, если она не в прошлом (исключаем проверку "30 минут от публикации")
         if (updateEvent.getEventDate() != null) {
             if (updateEvent.getEventDate().isBefore(LocalDateTime.now())) {
                 throw new ValidationException("Некорректные параметры даты. Дата начала события не может быть в прошлом.");
@@ -144,6 +143,7 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(eventForUpdate);
         return EventMapper.toEventFullDto(eventForUpdate);
     }
+
 
 
     @Override
