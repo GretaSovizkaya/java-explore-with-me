@@ -1,42 +1,42 @@
 package client;
 
 import dto.StatDto;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import dto.StatResponseDto;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
-
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
-@Component
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class StatsClient {
-    RestTemplate restTemplate;
-    String statsServiceUrl = "http://localhost:8080/stats";
+@Service
+public class StatsClient extends BaseClient {
 
-    public void sendHit(StatDto hitDto) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<StatDto> request = new HttpEntity<>(hitDto, headers);
-        restTemplate.exchange(statsServiceUrl + "/hit", HttpMethod.POST, request, Void.class);
+    @Autowired
+    public StatsClient(@Value("${client.url}") String serviceUrl, RestTemplateBuilder builder) {
+        super(
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serviceUrl + ""))
+                        .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
+                        .build()
+        );
     }
 
-    public List<StatResponseDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        String url = String.format("%s?start=%s&end=%s&unique=%b", statsServiceUrl, start, end, unique);
-        if (uris != null && !uris.isEmpty()) {
-            url += "&uris=" + String.join(",", uris);
-        }
-        ResponseEntity<StatResponseDto[]> response = restTemplate.getForEntity(url, StatResponseDto[].class);
-        return List.of(response.getBody());
+    public ResponseEntity<Object> sendHit(StatDto inDto) {
+        return post("/hit", inDto);
     }
+
+    public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
+        Map<String, Object> params = Map.of(
+                "start", start,
+                "end", end,
+                "uris", uris,
+                "unique", unique
+        );
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", params);
+    }
+
 }

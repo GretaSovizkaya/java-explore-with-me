@@ -2,15 +2,26 @@
 package server.model.mapper;
 
 import dto.StatDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import dto.StatInDto;
 import server.model.Stats;
 
-@Mapper
-public interface StatMapper {
-    StatMapper INSTANCE = Mappers.getMapper(StatMapper.class);
 
-    Stats toStat(StatDto statDto);
+public class StatMapper {
+    public static StatDto toStatDto(Stats stats) {
+        return StatDto.builder()
+                .app(stats.getApp())
+                .uri(stats.getUri())
+                .timestamp(stats.getTimestamp())
+                .build();
+    }
 
-    StatDto toStatDto(Stats stat);
+    public static Stats toStat(StatInDto statInDto) {
+        return new Stats(
+                null,
+                statInDto.getApp(),
+                statInDto.getUri(),
+                statInDto.getIp(),
+                statInDto.getTimestamp()
+        );
+    }
 }
