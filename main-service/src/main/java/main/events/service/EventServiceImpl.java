@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import main.categories.model.Category;
 import main.categories.repository.CategoryRepository;
+import main.comment.dto.CountCommentsByEventDto;
+import main.comment.repository.CommentRepository;
 import main.events.dto.*;
 import main.events.mapper.EventMapper;
 import main.events.model.Event;
@@ -55,6 +57,7 @@ public class EventServiceImpl implements EventService {
     final LocationRepository locationRepository;
     final StatsClient statsClient;
     final ObjectMapper objectMapper;
+    final CommentRepository commentRepository;
 
     @Value("${server.application.name:ewm-service}")
     String applicationName;
@@ -313,8 +316,16 @@ public class EventServiceImpl implements EventService {
 
         Map<Long, Long> viewStatsMap = getViews(resultEvents);
 
+        List<CountCommentsByEventDto> commentsCountMap = commentRepository.countCommentByEvent(
+                resultEvents.stream().map(Event::getId).collect(Collectors.toList()));
+        Map<Long, Long> commentsCountToEventIdMap = commentsCountMap.stream().collect(Collectors.toMap(
+                CountCommentsByEventDto::getEventId, CountCommentsByEventDto::getCountComments));
+
         for (EventShortDto eventDto : result) {
             eventDto.setViews(viewStatsMap.getOrDefault(eventDto.getId(), 0L));
+
+            Long commentCountFromMap = commentsCountToEventIdMap.getOrDefault(eventDto.getId(), 0L);
+            eventDto.setComments(commentCountFromMap);
         }
 
         return result;
