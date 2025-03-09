@@ -1,5 +1,9 @@
-# java-explore-with-me
-Template repository for ExploreWithMe project.
+# Исследуй со мной
+Дипломная работа в Яндекс Практикуме
+ExploreWithMe - многомодульный проект,  позволяющий  пользователям делиться информацией об интересных событиях и находить компанию для участия в них.  
 Добавлена новая функциональность comments. Благодаря ей пользователи могут добавлять комментарии к мероприятиям. 
 
-ссылка на pull request https://github.com/GretaSovizkaya/java-explore-with-me/pull/5
+Используемые технологии: Spring Boot,  Lombok, Git, REST, Postman, PostgreSQL, SQL,  Hibernate, JPA, Maven, Docker.
+
+
+
