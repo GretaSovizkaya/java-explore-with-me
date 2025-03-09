@@ -1,10 +1,9 @@
-package main.events.dto;
+package main.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import main.categories.dto.CategoryDto;
-import main.users.dto.UserShortDto;
+
 
 import java.time.LocalDateTime;
 
@@ -14,16 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventShortDto {
+public class CommentResponseDto {
     Long id;
-    String annotation;
-    CategoryDto category;
-    Integer confirmedRequests;
+    String text;
+    Long authorId;
+    Long eventId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime eventDate;
-    UserShortDto initiator;
-    boolean paid;
-    String title;
-    Long views;
-    Long comments;
+    LocalDateTime created;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime lastUpdatedOn;
 }
